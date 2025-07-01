@@ -1,0 +1,22 @@
+from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+from functools import wraps
+from flask import jsonify
+
+def jwt_required_custom(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            verify_jwt_in_request()
+        except Exception as e:
+            return jsonify({"error": "Unauthorized", "message": str(e)}), 401
+        return fn(*args, **kwargs)
+    return wrapper
+
+def get_current_admin_id():
+    """
+    Helper untuk mengambil admin_id dari JWT token.
+    """
+    identity = get_jwt_identity()
+    if identity == 'default_admin':
+        return None
+    return int(identity)
