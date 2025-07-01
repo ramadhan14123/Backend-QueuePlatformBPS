@@ -28,7 +28,7 @@ flask db init
 ```
 - Generate Migration Script
 ```bash
-flask db migrate "Inisialisasi Pertama"
+flask db migrate -m "Inisialisasi Pertama"
 ```
 - Apply Migration ke Database
 ```bash
