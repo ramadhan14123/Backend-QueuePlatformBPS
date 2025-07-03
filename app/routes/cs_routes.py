@@ -1,6 +1,6 @@
 from flask import Blueprint
 from app.controllers.cs_controller import confirm_visit, manual_reset_queue, cs_login, get_logs, reset_countdown
-from flask_jwt_extended import jwt_required as jqwt_required
+from app.utils.auth import jwt_required_custom
 from app.controllers.cs_controller import manual_reset_db
 
 cs_bp = Blueprint('cs', __name__)
@@ -9,13 +9,13 @@ cs_bp = Blueprint('cs', __name__)
 def index():
     return {'status': 'cs routes are Activate'}, 200
 
-@cs_bp.route('/confirm', methods=['POST'])
-@jqwt_required()
-def confirm_visit_route():
-    return confirm_visit()
+@cs_bp.route('/confirm/<int:visit_id>', methods=['PUT'])
+@jwt_required_custom
+def confirm_visit_route(visit_id):
+    return confirm_visit(visit_id)
 
 @cs_bp.route('/reset', methods=['POST'])
-@jqwt_required()
+@jwt_required_custom
 def reset():
     return manual_reset_queue()
 
@@ -24,7 +24,7 @@ def login():
     return cs_login()
 
 @cs_bp.route('/resetdb', methods=['POST'])
-@jqwt_required()
+@jwt_required_custom
 def reset_db():
     return manual_reset_db()
 
@@ -33,7 +33,7 @@ def countdown():
     return reset_countdown()
 
 @cs_bp.route('/actlogs', methods=['GET'])
-@jqwt_required()
+@jwt_required_custom
 def fetch_logs():
     """
     Fetch logs from the database.

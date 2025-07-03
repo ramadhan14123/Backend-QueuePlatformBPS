@@ -4,6 +4,8 @@ from app.models.guest import Guest
 from app.models.visit import Visit
 from app.utils.queue_number import assign_queue_number
 from app.utils.email_checker import is_disposable_email
+from app.utils.auth import get_current_admin_id
+from app.models.log import Log  # Jika ingin mencatat log
 
 def create_guest_visit():
     data = request.json
@@ -57,3 +59,22 @@ def get_guest(guest_id):
         'email': guest.email,
         'guest_name': guest.guest_name
     })
+
+def delete_guest(guest_id):
+    admin_id = get_current_admin_id()
+    if admin_id is None:
+        return jsonify({'error': 'Unauthorized action'}), 403
+
+    guest = Guest.query.get(guest_id)
+    if not guest:
+        return jsonify({'error': 'Guest not found'}), 404
+    db.session.delete(guest)
+    db.session.commit()
+
+    if str(admin_id) == 'default_admin':
+        db.session.add(Log(admin_env='default_admin', action=f"Delete Guest {guest_id}"))
+    else:
+        db.session.add(Log(admin_id=admin_id, action=f"Delete Guest {guest_id}"))
+    db.session.commit()
+
+    return jsonify({'message': 'Guest deleted successfully'}), 200

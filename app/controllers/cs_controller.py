@@ -13,8 +13,7 @@ from app.utils.reset_db import reset_database
 ADMIN_NAME = os.getenv("ADMIN_NAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
-def confirm_visit():
-    visit_id = request.json.get('visit_id')
+def confirm_visit(visit_id):
     admin_id = get_current_admin_id()
     visit = Visit.query.get(visit_id)
     if not visit:
