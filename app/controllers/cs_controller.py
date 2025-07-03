@@ -23,7 +23,10 @@ def confirm_visit():
     db.session.commit()
 
     if admin_id is not None:
-        db.session.add(Log(admin_id=admin_id, action=f"Confirm Visit {visit_id}"))
+        if str(admin_id) == 'default_admin':
+            db.session.add(Log(admin_env='default_admin', action=f"Confirm Visit {visit_id}"))
+        else:
+            db.session.add(Log(admin_id=admin_id, action=f"Confirm Visit {visit_id}"))
         db.session.commit()
     return jsonify({'message': 'Visit confirmed successfully'}), 200
 
@@ -32,7 +35,10 @@ def manual_reset_queue():
     if admin_id is None:
         return jsonify({'error': 'Unauthorized action'}), 403
     reset_queue_number()
-    db.session.add(Log(admin_id=admin_id, action="Manual Reset Queue Number"))
+    if str(admin_id) == 'default_admin':
+        db.session.add(Log(admin_env='default_admin', action="Manual Reset Queue Number"))
+    else:
+        db.session.add(Log(admin_id=admin_id, action="Manual Reset Queue Number"))
     db.session.commit()
     return jsonify({'message': 'Queue number reset successfully'}), 200
 
@@ -59,7 +65,10 @@ def manual_reset_db():
     export_format = request.args.get("format", "excel")
     try:
         filename = reset_database(export_format)
-        db.session.add(Log(admin_id=admin_id, action=f"Manual Reset DB ({export_format})"))
+        if str(admin_id) == 'default_admin':
+            db.session.add(Log(admin_env='default_admin', action=f"Manual Reset DB ({export_format})"))
+        else:
+            db.session.add(Log(admin_id=admin_id, action=f"Manual Reset DB ({export_format})"))
         db.session.commit()
         return jsonify({'message': f'Database reset successfully, exported to {filename}'}), 200
     except Exception as e:
@@ -88,8 +97,8 @@ def get_logs():
         result.append({
             "log_id": log.log_id,
             "admin_id": log.admin_id,
+            "admin_env": log.admin_env,
             "action": log.action,
             "timestamp": log.timestamp.isoformat()
         })
     return jsonify(result), 200
-    

@@ -18,5 +18,5 @@ def get_current_admin_id():
     """
     identity = get_jwt_identity()
     if identity == 'default_admin':
-        return None
+        return 'default_admin'
     return int(identity)
