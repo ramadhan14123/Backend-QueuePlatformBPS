@@ -47,3 +47,13 @@ def create_guest_visit():
         response['queue_number'] = queue_number
 
     return jsonify(response), 201
+
+def get_guest(guest_id):
+    guest = Guest.query.get(guest_id)
+    if not guest:
+        return jsonify({'error': 'Guest not found'}), 404
+    return jsonify({
+        'guest_id': guest.guest_id,
+        'email': guest.email,
+        'guest_name': guest.guest_name
+    })
