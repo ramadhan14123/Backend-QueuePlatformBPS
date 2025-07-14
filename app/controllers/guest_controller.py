@@ -50,6 +50,23 @@ def create_guest_visit():
 
     return jsonify(response), 201
 
+def get_all_guests():
+    guest = Guest.query.all()
+    result = []
+    for g in guest:
+        result.append({
+            'guest_id': g.guest_id,
+            'email': g.email,
+            'guest_name': g.guest_name,
+            'gender':g.gender,
+            'identity_type': g.identity_type,
+            'identity_number': g.identity_number,
+            'institution': g.institution,
+            'phone': g.phone
+        })
+    return jsonify(result), 200
+
+
 def get_guest(guest_id):
     guest = Guest.query.get(guest_id)
     if not guest:
@@ -57,8 +74,13 @@ def get_guest(guest_id):
     return jsonify({
         'guest_id': guest.guest_id,
         'email': guest.email,
-        'guest_name': guest.guest_name
+        'guest_name': guest.guest_name,
+        'gender': guest.gender,
+        'identity_type': guest.identity_type,
+        'identity_number': guest.identity_number,
+        'institution': guest.institution,
     })
+
 
 def delete_guest(guest_id):
     admin_id = get_current_admin_id()

@@ -1,8 +1,12 @@
 from flask import Blueprint
-from app.controllers.guest_controller import create_guest_visit, get_guest, delete_guest
+from app.controllers.guest_controller import create_guest_visit, get_guest, delete_guest, get_all_guests
 from app.utils.auth import jwt_required_custom
 
 guest_bp = Blueprint('guest', __name__)
+
+@guest_bp.route('/allguest', methods=['GET'])
+def all_guests():
+    return get_all_guests()
 
 @guest_bp.route('/form', methods=['POST'])
 def register_guest():
