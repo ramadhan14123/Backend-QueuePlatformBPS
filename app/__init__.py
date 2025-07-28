@@ -40,12 +40,15 @@ def create_app(config_class=Config):
         id="daily_queue_reset"  
     )
 
+    def reset_database_with_context():
+        with app.app_context():
+            reset_database(export_format="excel")
+
     scheduler.add_job(
-        func=reset_database,
+        func=reset_database_with_context,
         trigger="interval",
-        weeks=1,
-        kwargs={"export_format": "excel"},
-        id="weekly_reset"  
+        weeks=1, #atur sesuai kebutuhan waktu reset mingguan
+        id="weekly_reset"
     )
 
     # Jalankan scheduler hanya jika tidak sedang pakai Flask CLI

@@ -9,10 +9,12 @@ def index():
     return {'status': 'Visit routes are Activate'}, 200
 
 @visit_bp.route('/visits', methods=['GET'])
+@jwt_required_custom
 def visits_get():
     return get_visits()
 
 @visit_bp.route('/visits', methods=['POST'])
+@jwt_required_custom
 def visits_post():
     return create_visit()
 
@@ -22,5 +24,6 @@ def visits_put(visit_id):
     return update_visit(visit_id)
 
 @visit_bp.route('/category', methods=['GET'])
+@jwt_required_custom
 def category_visits():
     return category_visits_logic()

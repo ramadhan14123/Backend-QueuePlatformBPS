@@ -5,6 +5,7 @@ from app.utils.auth import jwt_required_custom
 guest_bp = Blueprint('guest', __name__)
 
 @guest_bp.route('/allguest', methods=['GET'])
+@jwt_required_custom
 def all_guests():
     return get_all_guests()
 

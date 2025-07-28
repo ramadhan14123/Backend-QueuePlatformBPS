@@ -78,15 +78,9 @@ def reset_countdown():
     if not job or not job.next_run_time:
         return jsonify({'error': 'Job not found or not scheduled'}), 404
 
-    now = datetime.now(job.next_run_time.tzinfo)
-    delta = job.next_run_time - now
-
+    # Kembalikan waktu reset berikutnya dalam format ISO 8601 agar mudah di-parse frontend
     return jsonify({
-        'next_reset': job.next_run_time.strftime("%Y-%m-%d %H:%M:%S"),
-        'hours': delta.seconds // 3600,
-        'minutes': (delta.seconds % 3600) // 60,
-        'seconds': delta.seconds % 60,
-        'raw': str(delta)
+        'next_reset': job.next_run_time.isoformat()
     })
     
 def get_logs():
