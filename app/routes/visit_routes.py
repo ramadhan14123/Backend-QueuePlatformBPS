@@ -23,5 +23,6 @@ def visits_put(visit_id):
     return update_visit(visit_id)
 
 @visit_bp.route('/category', methods=['GET'])
+@jwt_required_custom
 def category_visits():
     return category_visits_logic()
