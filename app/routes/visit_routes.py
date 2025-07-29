@@ -8,8 +8,7 @@ visit_bp = Blueprint('visit', __name__)
 def index():
     return {'status': 'Visit routes are Activate'}, 200
 
-@visit_bp.route('/visits', methods=['GET'])
-@jwt_required_custom
+@visit_bp.route('/GetVisits', methods=['GET'])
 def visits_get():
     return get_visits()
 
@@ -24,6 +23,5 @@ def visits_put(visit_id):
     return update_visit(visit_id)
 
 @visit_bp.route('/category', methods=['GET'])
-@jwt_required_custom
 def category_visits():
     return category_visits_logic()
