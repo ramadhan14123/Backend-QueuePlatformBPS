@@ -58,7 +58,7 @@ def get_all_guests():
             'guest_id': g.guest_id,
             'email': g.email,
             'guest_name': g.guest_name,
-            'gender':g.gender,
+            'gender': g.gender,
             'identity_type': g.identity_type,
             'identity_number': g.identity_number,
             'institution': g.institution,
@@ -71,6 +71,8 @@ def get_guest(guest_id):
     guest = Guest.query.get(guest_id)
     if not guest:
         return jsonify({'error': 'Guest not found'}), 404
+    latest_visit = Visit.query.filter_by(guest_id=guest.guest_id).order_by(Visit.timestamp.desc()).first()
+    mark_status = getattr(latest_visit, 'mark', None)
     return jsonify({
         'guest_id': guest.guest_id,
         'email': guest.email,
@@ -79,6 +81,7 @@ def get_guest(guest_id):
         'identity_type': guest.identity_type,
         'identity_number': guest.identity_number,
         'institution': guest.institution,
+        'status': mark_status
     })
 
 
