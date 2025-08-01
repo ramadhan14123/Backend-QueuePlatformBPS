@@ -9,6 +9,7 @@ from app.utils.queue_number import reset_queue_number
 from app.utils.auth import get_current_admin_id
 from flask_jwt_extended import create_access_token
 from app.utils.reset_db import reset_database
+from app.controllers.log_controllers import create_log
 
 ADMIN_NAME = os.getenv("ADMIN_NAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
@@ -22,11 +23,12 @@ def confirm_visit(visit_id):
     db.session.commit()
 
     if admin_id is not None:
-        if str(admin_id) == 'default_admin':
-            db.session.add(Log(admin_env='default_admin', action=f"Confirm Visit {visit_id}"))
-        else:
-            db.session.add(Log(admin_id=admin_id, action=f"Confirm Visit {visit_id}"))
-        db.session.commit()
+        log_data = {
+            "admin_id": None if str(admin_id) == 'default_admin' else admin_id,
+            "admin_env": 'default_admin' if str(admin_id) == 'default_admin' else None,
+            "action": f"Confirm Visit {visit_id}"
+        }
+        create_log(log_data)
     return jsonify({'message': 'Visit confirmed successfully'}), 200
 
 def manual_reset_queue():
@@ -34,11 +36,12 @@ def manual_reset_queue():
     if admin_id is None:
         return jsonify({'error': 'Unauthorized action'}), 403
     reset_queue_number()
-    if str(admin_id) == 'default_admin':
-        db.session.add(Log(admin_env='default_admin', action="Manual Reset Queue Number"))
-    else:
-        db.session.add(Log(admin_id=admin_id, action="Manual Reset Queue Number"))
-    db.session.commit()
+    log_data = {
+        "admin_id": None if str(admin_id) == 'default_admin' else admin_id,
+        "admin_env": 'default_admin' if str(admin_id) == 'default_admin' else None,
+        "action": "Manual Reset Queue Number"
+    }
+    create_log(log_data)
     return jsonify({'message': 'Queue number reset successfully'}), 200
 
 def cs_login():
@@ -64,11 +67,12 @@ def manual_reset_db():
     export_format = request.args.get("format", "excel")
     try:
         filename = reset_database(export_format)
-        if str(admin_id) == 'default_admin':
-            db.session.add(Log(admin_env='default_admin', action=f"Manual Reset DB ({export_format})"))
-        else:
-            db.session.add(Log(admin_id=admin_id, action=f"Manual Reset DB ({export_format})"))
-        db.session.commit()
+        log_data = {
+            "admin_id": None if str(admin_id) == 'default_admin' else admin_id,
+            "admin_env": 'default_admin' if str(admin_id) == 'default_admin' else None,
+            "action": f"Manual Reset DB ({export_format})"
+        }
+        create_log(log_data)
         return jsonify({'message': f'Database reset successfully, exported to {filename}'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -92,6 +96,7 @@ def get_logs():
             "admin_id": log.admin_id,
             "admin_env": log.admin_env,
             "action": log.action,
-            "timestamp": log.timestamp.isoformat()
+            "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+            "expired_at": log.expired_at.isoformat() if log.expired_at else None
         })
     return jsonify(result), 200

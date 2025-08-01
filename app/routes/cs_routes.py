@@ -1,7 +1,10 @@
-from flask import Blueprint
+from flask import Blueprint, request, jsonify
 from app.controllers.cs_controller import confirm_visit, manual_reset_queue, cs_login, get_logs, reset_countdown
-from app.utils.auth import jwt_required_custom
 from app.controllers.cs_controller import manual_reset_db
+from app.utils.auth import jwt_required_custom
+from app.controllers.log_controllers import set_default_log_expiry
+from app.controllers.log_controllers import get_log_expiry_days
+
 
 cs_bp = Blueprint('cs', __name__)
 
@@ -33,9 +36,15 @@ def countdown():
     return reset_countdown()
 
 @cs_bp.route('/actlogs', methods=['GET'])
-@jwt_required_custom
+# @jwt_required_custom
 def fetch_logs():
-    """
-    Fetch logs from the database.
-    """
     return get_logs()
+
+@cs_bp.route('/expiredLogs', methods=['POST'])
+# @jwt_required_custom
+def set_log_expiry_days_route():
+    return set_default_log_expiry(request.get_json())
+
+@cs_bp.route('/get-expired-logs', methods=['GET'])
+def get_expired_logs():
+    return get_log_expiry_days()

@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 
 from app.extensions import db, migrate, bcrypt, jwt, scheduler
 from app.utils.reset_db import reset_database
+from app.controllers.log_controllers import delete_expired_logs
 
 def get_next_weekly_reset():
     now = datetime.now()
-    # Reset setiap Senin jam 00:00
     next_reset = now + timedelta(days=(7 - now.weekday()))
     next_reset = next_reset.replace(hour=0, minute=0, second=0, microsecond=0)
     return next_reset
@@ -51,7 +51,18 @@ def create_app(config_class=Config):
         id="weekly_reset"
     )
 
-    # Jalankan scheduler hanya jika tidak sedang pakai Flask CLI
+    def delete_expired_logs_with_context():
+        print("[SCHEDULER] delete_expired_logs dijalankan")
+        with app.app_context():
+            delete_expired_logs()
+
+    scheduler.add_job(
+        func=delete_expired_logs_with_context,
+        trigger="interval",
+        days=1,  # Bisa dissesuaikan dengan kebutuhan, kapan pengeksekusian nya 
+        id="daily_delete_expired_logs"
+    )
+
     if os.environ.get("FLASK_RUN_FROM_CLI") != "true":
         try:
             scheduler.start()
