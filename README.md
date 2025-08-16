@@ -297,13 +297,44 @@ Contoh Response
 ```json
 [
   {
-    "log_id": 1,
-    "admin_id": 1,
-    "action": "Confirm Visit 1",
-    "timestamp": "2024-06-10T10:00:00"
+    "action": "Manual Reset Queue Number",
+    "admin_env": "default_admin",
+    "admin_id": null,
+    "expired_at": "2025-08-16T03:44:04",
+    "log_id": 287,
+    "timestamp": "2025-08-01T03:44:04"
   }
 ]
 ```
+
+#### CS GET LOGS EXPIRED DAYS
+```json
+GET /api/cs/get-expired-logs
+```
+Contoh Response
+```json
+{
+    "days": 7
+}
+```
+#### CS POST LOGS EXPIRED DAYS
+```json
+POST /api/cs/expiredLogs
+```
+Contoh Request
+```json
+{
+    "days": 15
+}
+```
+Contoh Response
+```json
+{
+    "pesan": "Default kadaluarsa log diubah menjadi 15 hari.",
+    "status": "sukses"
+}
+```
+
 ---
 #### EXPORT GUEST DATA
 ```json
