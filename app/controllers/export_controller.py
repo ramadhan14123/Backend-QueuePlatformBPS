@@ -1,5 +1,5 @@
 from app.extensions import db
-from flask import send_file, request, jsonify, send_from_directory
+from flask import send_file, request, jsonify, send_from_directory, make_response
 import os
 from app.models.visit import Visit
 from app.models.log import Log
@@ -10,6 +10,7 @@ def export_guest_excel():
     guests = Guest.query.all()
     output = export_guests_to_excel(guests)
     output.seek(0)
+
     return send_file(
         output,
         as_attachment=True,
@@ -21,6 +22,7 @@ def export_logs():
     logs = Log.query.order_by(Log.timestamp.desc()).all()
     output = export_logs_to_excel(logs)
     output.seek(0)
+
     return send_file(
         output,
         as_attachment=True,
@@ -30,8 +32,9 @@ def export_logs():
 
 def export_excel():
     visits = Visit.query.all()
-    output = export_visits_to_excel(visits)  # langsung pakai fungsi dari utils
+    output = export_visits_to_excel(visits)
     output.seek(0)
+
     return send_file(
         output,
         as_attachment=True,
@@ -53,7 +56,6 @@ def list_weekly_exports():
                 'size': stat.st_size,
                 'modified': stat.st_mtime
             })
-    # Urutkan terbaru di atas
     return jsonify(sorted(files, key=lambda x: x['modified'], reverse=True))
 
 # Download a specific export file
@@ -66,4 +68,5 @@ def delete_weekly_export(filename):
     if os.path.exists(fpath):
         os.remove(fpath)
         return jsonify({'message': 'File deleted'}), 200
-    return jsonify({'error': 'File not found'}), 404
+    else:
+        return jsonify({'error': 'File not found'}), 404

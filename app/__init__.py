@@ -68,6 +68,6 @@ def create_app(config_class=Config):
             scheduler.start()
         except Exception:
             pass
-    for rule in app.url_map.iter_rules():
-            print(f"[ROUTE] {rule.methods} => {rule}")
+    # for rule in app.url_map.iter_rules():
+    #         print(f"[ROUTE] {rule.methods} => {rule}")
     return app
