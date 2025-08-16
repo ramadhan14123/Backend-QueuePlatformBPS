@@ -1,6 +1,7 @@
 from app.extensions import db
 from flask import send_file, request, jsonify, send_from_directory, make_response
 import os
+import tempfile
 from app.models.visit import Visit
 from app.models.log import Log
 from app.utils.export_utils import export_visits_to_excel, export_logs_to_excel, export_guests_to_excel
@@ -11,8 +12,13 @@ def export_guest_excel():
     output = export_guests_to_excel(guests)
     output.seek(0)
 
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+        tmp.write(output.getvalue())
+        tmp.flush()
+        tmp_path = tmp.name
+
     return send_file(
-        output,
+        tmp_path,
         as_attachment=True,
         download_name='guest.xlsx',
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -23,8 +29,13 @@ def export_logs():
     output = export_logs_to_excel(logs)
     output.seek(0)
 
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+        tmp.write(output.getvalue())
+        tmp.flush()
+        tmp_path = tmp.name
+
     return send_file(
-        output,
+        tmp_path,
         as_attachment=True,
         download_name='log_admin.xlsx',
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -35,8 +46,13 @@ def export_excel():
     output = export_visits_to_excel(visits)
     output.seek(0)
 
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp:
+        tmp.write(output.getvalue())
+        tmp.flush()
+        tmp_path = tmp.name
+
     return send_file(
-        output,
+        tmp_path,
         as_attachment=True,
         download_name='kunjungan.xlsx',
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
