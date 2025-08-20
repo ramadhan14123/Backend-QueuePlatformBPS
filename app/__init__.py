@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from app.extensions import db, migrate, bcrypt, jwt, scheduler
 from app.utils.reset_db import reset_database
 from app.controllers.log_controllers import delete_expired_logs
+from flasgger import Swagger
 
 def get_next_weekly_reset():
     now = datetime.now()
@@ -68,6 +69,9 @@ def create_app(config_class=Config):
             scheduler.start()
         except Exception:
             pass
+
+    Swagger(app)
+
     # for rule in app.url_map.iter_rules():
     #         print(f"[ROUTE] {rule.methods} => {rule}")
     return app
