@@ -70,7 +70,16 @@ def create_app(config_class=Config):
         except Exception:
             pass
 
-    Swagger(app)
+    swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "Queue Platform BPS API",
+            "description": "Catatan: Semua endpoint membutuhkan token JWT kecuali Sign in dan juga keperluan guest. Silakan baca dokumentasi setiap endpoint untuk detail parameter dan response.",
+            "version": "1.0.0"
+        }
+    }
+
+    Swagger(app, template=swagger_template)
 
     # for rule in app.url_map.iter_rules():
     #         print(f"[ROUTE] {rule.methods} => {rule}")
